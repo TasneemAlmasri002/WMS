@@ -1,0 +1,64 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلباتي</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- زر تبديل الشريط الجانبي -->
+        <button class="toggle-btn" id="toggle-btn">☰</button>
+        <div id="content" class="content">
+            <!-- العنوان -->
+            <div class="header">
+                <h1>طلباتي</h1>
+            </div>
+            <!-- شريط الأدوات لتصفية طلباتي حسب الحالة -->
+            <div class="toolbar">
+                <div class="status-filter">
+                    <button class="btn btn-secondary status-btn active" data-status="">الكل</button>
+                    <button class="btn btn-secondary status-btn" data-status="قيد الانتظار">قيد الانتظار</button>
+                    <button class="btn btn-secondary status-btn" data-status="موافق عليه">موافق عليه</button>
+                    <button class="btn btn-secondary status-btn" data-status="مرفوض">مرفوض</button>
+                    <button class="btn btn-secondary status-btn" data-status="مكتمل">مكتمل</button>
+                </div>
+            </div>
+            <!-- حقل البحث -->
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="ابحث عن طلب...">
+                <button id="searchBtn" class="btn btn-primary">بحث</button>
+                <div class="search-results-info">
+                    <button id="resetSearchBtn" class="btn btn-secondary">إعادة تعيين</button>
+                    <span id="searchResultsCount"></span>
+                </div>            </div>
+             <div class="table-container">
+
+            <!-- جدول طلباتي -->
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>رقم الطلب</th>
+                        <th>تاريخ الطلب</th>
+                        <th>اسم الشركة</th>
+                        <th>المبلغ</th>
+                        <th>الحالة</th>
+                        <th>الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody"></tbody>
+            </table>
+            </div>
+            
+        <!-- الشريط الجانبي -->
+        <div id="sidebar" class="sidebar">
+            <h2>لوحة التنقل</h2>
+            <ul id="nav-links"></ul>
+        </div>
+    </div>
+    <script defer src="/sidebar.js"></script>
+    <script defer src="/js/MyOrders.js"></script>
+</body>
+</html>

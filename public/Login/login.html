@@ -1,0 +1,65 @@
+<!-- public/Login/login.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <div class="logo">
+                <i class="fas fa-warehouse"></i>
+                <h1>نظام إدارة المستودعات</h1>
+            </div>
+            <h2>تسجيل الدخول</h2>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="role">اختر مسمى الوظيفي:</label>
+                    <div class="select-wrapper">
+                        <select id="role" name="role" required>
+                            <option value="">اختر الدور</option>
+                            <option value="مسؤول النظام">مسؤول النظام</option>
+                            <option value="مدير">مدير</option>
+                            <option value="مورد">مورد</option>
+                            <option value="موظف المستودع">موظف المستودع</option>
+                            <option value="موظف التتبع و الفواتير">موظف التتبع و الفواتير</option>
+                        </select>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">اسم المستخدم:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" required placeholder="أدخل اسم المستخدم">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور:</label>
+                    <div class="input-wrapper password-container">
+                        <input type="password" id="password" name="password" required placeholder="أدخل كلمة المرور">
+                        <button type="button" id="togglePassword" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="submit-btn">
+                    <i class="fas fa-sign-in-alt me-2"></i>تسجيل الدخول
+                </button>
+                <p id="errorMessage" class="error-message d-none"></p> 
+                <p class="forgot-link">
+                    <a href="/forgot-password.html">نسيت كلمة المرور؟</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    <script src="/js/login.js"></script>
+</body>
+</html>

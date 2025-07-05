@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الطلب</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            direction: rtl;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 100%;
+            margin: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #4b5fbb, #6b7fd8);
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .page-title i {
+            font-size: 28px;
+        }
+        .back-btn, .print-invoice-btn, .save-rep-btn, .return-order-btn {
+            background-color: #ff8c00;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .print-invoice-btn {
+            background-color: #4b5fbb;
+        }
+        .save-rep-btn {
+            background-color: #28a745;
+        }
+        .return-order-btn {
+            background-color: #dc3545;
+        }
+        .back-btn:hover {
+            background-color: #e67e00;
+        }
+        .print-invoice-btn:hover {
+            background-color: #3a4da0;
+        }
+        .save-rep-btn:hover {
+            background-color: #218838;
+        }
+        .return-order-btn:hover:not(:disabled) {
+            background-color: #c82333;
+        }
+        .return-order-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .order-info-box {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .order-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+        .order-header-container .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .order-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4b5fbb;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .order-date {
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .order-tracking {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .tracking-steps {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            gap: 15px;
+            position: relative;
+            margin-top: 20px;
+        }
+        .tracking-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        .tracking-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+            min-width: 100px;
+        }
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .step-label {
+            font-size: 14px;
+            color: #555;
+            text-align: center;
+        }
+        .order-tracking[data-status="قيد الانتظار"] .tracking-step:nth-child(1) .step-icon {
+            background-color: #4b5fbb;
+            transform: scale(1.1);
+        }
+        .order-tracking[data-status="قيد الانتظار"] .tracking-step:nth-child(1) .step-label {
+            color: #4b5fbb;
+            font-weight: bold;
+        }
+        .order-tracking[data-status="موافق عليه"] .tracking-step:nth-child(-n+2) .step-icon {
+            background-color: #4b5fbb;
+            transform: scale(1.1);
+        }
+        .order-tracking[data-status="موافق عليه"] .tracking-step:nth-child(-n+2) .step-label {
+            color: #4b5fbb;
+            font-weight: bold;
+        }
+        .order-tracking[data-status="مرفوض"] .tracking-step:nth-child(1) .step-icon,
+        .order-tracking[data-status="مرفوض"] .tracking-step:nth-child(2) .step-icon {
+            background-color: #4b5fbb;
+            transform: scale(1.1);
+        }
+        .order-tracking[data-status="مرفوض"] .tracking-step:nth-child(1) .step-label,
+        .order-tracking[data-status="مرفوض"] .tracking-step:nth-child(2) .step-label {
+            color: #4b5fbb;
+            font-weight: bold;
+        }
+        .order-tracking[data-status="مرفوض"] .tracking-step:nth-child(3) .step-icon {
+            background-color: #f44336;
+            transform: scale(1.1);
+        }
+        .order-tracking[data-status="مرفوض"] .tracking-step:nth-child(3) .step-label {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .order-tracking[data-status="مكتمل"] .tracking-step:nth-child(-n+4) .step-icon {
+            background-color: #4b5fbb;
+            transform: scale(1.1);
+        }
+        .order-tracking[data-status="مكتمل"] .tracking-step:nth-child(-n+4) .step-label {
+            color: #4b5fbb;
+            font-weight: bold;
+        }
+        .order-details {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .details-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4b5fbb;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .detail-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #4b5fbb;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .order-summary {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .order-summary p {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        .sales-rep-section {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .sales-rep-section label {
+            font-weight: bold;
+            color: #4b5fbb;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .sales-rep-section input {
+            width: 100%;
+            max-width: 300px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .sales-rep-section input[type="password"] {
+            max-width: 150px;
+        }
+        .table-container {
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .table-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #4b5fbb, #6b7fd8);
+            padding: 12px 15px;
+            margin: -20px -20px 20px -20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .products-table th {
+            background-color: #4b5fbb;
+            color: #fff;
+            padding: 12px 15px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .products-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .products-table tr:last-child td {
+            border-bottom: none;
+        }
+        .products-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #4b5fbb;
+            font-size: 16px;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Popup styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .popup-overlay[style*="flex"] {
+            opacity: 1;
+        }
+        .popup-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .popup-overlay[style*="flex"] .popup-content {
+            transform: scale(1);
+        }
+        .popup-content h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #f44336;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 30px;
+            text-align: center;
+        }
+        .close-btn:hover {
+            background: #d32f2f;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #4b5fbb;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .form-group button {
+            background-color: #2196F3;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        .form-group button:hover:not(:disabled) {
+            background-color: #1976D2;
+        }
+        .form-group button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div class="page-title">
+                <i class="fas fa-file-alt"></i> تفاصيل الطلب
+            </div>
+        </div>
+        <div class="order-info-box">
+            <div class="order-header-container">
+                <div>
+                    <div class="order-number"><i class="fas fa-hashtag"></i> <span></span></div>
+                    <div class="order-date"><i class="fas fa-calendar-alt"></i> <span></span></div>
+                </div>
+                <div class="buttons">
+                    <button class="print-invoice-btn">
+                        <i class="fas fa-print"></i> طباعة الفاتورة
+                    </button>
+                    <button class="return-order-btn" disabled title="غير مسموح بالإرجاع إلا بعد اكتمال الطلب">
+                        <i class="fas fa-undo"></i> إرجاع الطلب
+                    </button>
+                    <button class="back-btn">
+                        <i class="fas fa-arrow-right"></i> رجوع
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="order-details">
+            <div class="details-title">معلومات الطلب</div>
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="detail-label"><i class="fas fa-truck"></i> المورد</div>
+                    <div class="detail-value supplier-name"></div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label"><i class="fas fa-money-check-alt"></i> حالة الدفع</div>
+                    <div class="detail-value payment-status"></div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label"><i class="fas fa-credit-card"></i> طريقة الدفع</div>
+                    <div class="detail-value payment-method"></div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label"><i class="fas fa-user-tie"></i> الموظف المسؤول</div>
+                    <div class="detail-value employee-name"></div>
+                </div>
+            </div>
+        </div>
+        <div class="order-summary"></div>
+        <div class="order-tracking" data-status="">
+            <div class="tracking-steps">
+                <div class="tracking-step">
+                    <div class="step-icon"><i class="fas fa-hourglass-start"></i></div>
+                    <div class="step-label">قيد الانتظار</div>
+                </div>
+                <div class="tracking-step">
+                    <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="step-label">موافق عليه</div>
+                </div>
+                <div class="tracking-step">
+                    <div class="step-icon"><i class="fas fa-times-circle"></i></div>
+                    <div class="step-label">مرفوض</div>
+                </div>
+                <div class="tracking-step">
+                    <div class="step-icon"><i class="fas fa-flag-checkered"></i></div>
+                    <div class="step-label">مكتمل</div>
+                </div>
+            </div>
+        </div>
+        <div class="sales-rep-section">
+            <span class="sales-rep-field sales-rep-name-field">
+                <label for="sales-rep-name">اسم المندوب</label>
+                <input type="text" id="sales-rep-name" maxlength="100">
+            </span>
+            <span class="sales-rep-field sales-rep-phone-field">
+                <label for="sales-rep-phone">رقم هاتف المندوب</label>
+                <input type="tel" id="sales-rep-phone" maxlength="20">
+            </span>
+            <span class="sales-rep-field sales-rep-pin-field">
+                <label for="sales-rep-pin">رمز PIN</label>
+                <input type="password" id="sales-rep-pin" maxlength="4" pattern="\\d{4}">
+            </span>
+            <button class="save-rep-btn"><i class="fas fa-save"></i> حفظ بيانات المندوب</button>
+        </div>
+        <div class="table-container">
+            <div class="table-title">المنتجات</div>
+            <div class="loading">جاري التحميل...</div>
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>رقم</th>
+                        <th>المنتج</th>
+                        <th>الباركود</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>الإجمالي</th>
+                        <th>الملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody class="products-body"></tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Return Popup -->
+    <div id="returnPopup" class="popup-overlay">
+        <div class="popup-content">
+            <button id="closePopup" class="close-btn" aria-label="إغلاق">×</button>
+            <h2>نموذج إرجاع الطلب</h2>
+            <form id="returnForm" enctype="multipart/form-data">
+                <input type="hidden" id="order_id" name="order_id">
+                <input type="hidden" id="order_item_id" name="order_item_id">
+                <div class="form-group">
+                    <label for="return_date">تاريخ الإرجاع:</label>
+                    <input type="datetime-local" id="return_date" name="return_date" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="category">فئة الإرجاع:</label>
+                    <select id="category" name="category" required>
+                        <option value="">اختر فئة</option>
+                        <option value="تالف">تالف</option>
+                        <option value="غير مطابق">غير مطابق</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">الكمية:</label>
+                    <input type="number" id="quantity" name="quantity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="details">ملاحظات:</label>
+                    <textarea id="details" name="details"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="attachment">إرفاق ملف (اختياري):</label>
+                    <input type="file" id="attachment" name="attachment" accept="image/*,application/pdf">
+                </div>
+                <div class="form-group">
+                    <button type="submit">إرسال المرتجع</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="/js/order_details.js"></script>
+</body>
+</html>

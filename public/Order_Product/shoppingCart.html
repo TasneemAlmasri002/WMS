@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عربة التسوق</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <button class="toggle-btn" id="toggle-btn">☰</button>
+        <div class="content">
+            <div class="header">
+                <h1>عربة التسوق</h1>
+            </div>
+            <div class="cart-container">
+                <div class="cart-items">
+                    <div class="toolbar">
+                        
+                        <button class="btn btn-secondary" id="continueShopping">مواصلة التسوق</button>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" id="productSearch" placeholder="ابحث عن منتج...">
+                        <button class="btn btn-primary" id="searchBtn">بحث</button>
+                        <button class="btn btn-secondary" id="resetSearchBtn">إعادة تعيين</button>
+                        <span id="searchResultsCount"></span>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="cartTable">
+                            <thead>
+                                <tr>
+                                    <th>المنتج</th>
+                                    <th>الوصف</th>
+                                    <th>الباركود</th>
+                                    <th>الصنف</th>
+                                    <th>الوحدة</th>
+                                    <th>السعر</th>
+                                    <th>الكمية</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartItems">
+                                <!-- Cart items will be loaded here -->
+                            </tbody>
+                        </table>
+                        <div class="summary-bar" id="summaryBar">
+                            <!-- Summary content will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="popup" id="orderConfirmationPopup">
+            <div class="popup-content">
+                <button class="close-btn">×</button>
+                <h2>تأكيد الطلب</h2>
+                <p id="confirmationMessage">هل أنت متأكد من أنك تريد إرسال هذا الطلب؟ سيتم إرساله للموافقة</p>
+                <div class="popup-actions">
+                    <button class="btn btn-secondary" id="cancelOrder">إلغاء</button>
+                    <button class="btn btn-primary" id="confirmOrder">تأكيد</button>
+                </div>
+            </div>
+        </div>
+        <div class="message-header" id="messagePopup" style="display: none;">
+            <span id="messageText"></span>
+            <button class="close-message-btn">×</button>
+        </div>
+        <div id="sidebar" class="sidebar">
+            <h2>لوحة التنقل</h2>
+            <ul id="nav-links"></ul>
+        </div>
+    </div>
+    <script src="/sidebar.js"></script>
+    <script src="/js/cart.js"></script>
+</body>
+</html>

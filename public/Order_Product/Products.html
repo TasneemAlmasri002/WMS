@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المنتجات</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- زر التبديل -->
+        <button class="toggle-btn" id="toggle-btn">☰</button>
+
+        <div id="sidebar" class="sidebar">
+            <h2>لوحة التنقل</h2>
+            <ul id="nav-links"></ul>
+        </div>
+
+        <div class="content">
+            <div class="header">
+                <h1>المنتجات</h1>
+            </div>
+
+            <!-- سطر الأصناف -->
+            <div class="categories-bar">
+                <button class="btn btn-primary category-btn active" onclick="filterProducts('all')" data-category="all">الكل</button>
+            </div>
+
+            <!-- الشريط العلوي -->
+            <div class="toolbar">
+                <button class="btn btn-secondary back-btn" onclick="goBackToCompanies()">
+                    <i class="fas fa-arrow-right"></i> رجوع إلى الشركات
+                </button>
+                <button class="btn btn-primary manage-categories-btn" onclick="openManageCategoriesPopup()">إدارة الأصناف</button>
+                <button class="btn btn-primary add-product-btn" onclick="openAddProductPopup()">إضافة منتج</button>
+                <select id="statusFilter" onchange="filterByStatus()">
+                    <option value="all">كل الحالات</option>
+                    <option value="available">متوفر</option>
+                    <option value="unavailable">غير متوفر</option>
+                </select>
+                <button class="btn export-btn" onclick="exportData()">تصدير البيانات</button>
+                <input type="file" id="importFile" style="display:none;" accept=".csv" onchange="importData()">
+                <!-- <button class="btn btn-secondary import-btn" onclick="document.getElementById('importFile').click()">استيراد البيانات</button> -->
+                <button class="btn btn-primary cart-btn" onclick="openCartModal()" title="عربة التسوق">
+                    <i class="fas fa-shopping-cart"></i> <span id="cartCount" class="cart-count">0</span>
+                </button>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="ابحث عن منتج...">
+                <button class="btn btn-primary" onclick="search()">بحث</button>
+                <button class="btn btn-secondary" onclick="resetSearch()">إعادة تعيين</button>
+                <span id="searchResultsCount"></span>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table" id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>اسم المنتج</th>
+                            <th>الصنف</th>
+                            <th>الوصف</th>
+                            <th>الباركود</th>
+                            <th>الوحدة</th>
+                            <th>السعر</th>
+                            <th>الكمية</th>
+                            <th class="actions-column">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- نافذة إضافة منتج -->
+        <div class="popup" id="addProductPopup">
+            <div class="popup-content">
+                <button class="close-btn" onclick="closePopup('addProductPopup')" aria-label="إغلاق">×</button>
+                <h2>إضافة منتج جديد</h2>
+                <form id="addProductForm">
+                    <div class="form-group">
+                        <label>اسم المنتج</label>
+                        <input type="text" name="product_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الصنف</label>
+                        <select name="category_id" id="categorySelect">
+                            <option value="">اختر صنفًا</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الوصف</label>
+                        <input type="text" name="description">
+                    </div>
+                    <div class="form-group">
+                        <label>الباركود</label>
+                        <input type="text" name="barcode" pattern="[0-9]{8,13}" title="يجب أن يكون الباركود من 8 إلى 13 رقمًا">
+                    </div>
+                    <div class="form-group">
+                        <label>الوحدة</label>
+                        <input type="text" name="unit" placeholder="مثال: قطعة، كجم">
+                    </div>
+                    <div class="form-group">
+                        <label>السعر</label>
+                        <input type="number" name="price" step="0.01" min="0" placeholder="مثال: 10.50">
+                    </div>
+                    <div class="form-group">
+                        <label>الكمية</label>
+                        <input type="number" name="quantity" min="0" required>
+                    </div>
+                    <input type="hidden" name="manufacturer_id" id="manufacturerId">
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- نافذة تعديل منتج -->
+        <div class="popup" id="editProductPopup">
+            <div class="popup-content">
+                <button class="close-btn" onclick="closePopup('editProductPopup')" aria-label="إغلاق">×</button>
+                <h2>تعديل المنتج</h2>
+                <form id="editProductForm">
+                    <div class="form-group">
+                        <label>اسم المنتج</label>
+                        <input type="text" name="product_name" id="editProductName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الصنف</label>
+                        <select name="category_id" id="editCategorySelect">
+                            <option value="">اختر صنفًا</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الوصف</label>
+                        <input type="text" name="description" id="editDescription">
+                    </div>
+                    <div class="form-group">
+                        <label>الباركود</label>
+                        <input type="text" name="barcode" id="editBarcode" pattern="[0-9]{8,13}" title="يجب أن يكون الباركود من 8 إلى 13 رقمًا">
+                    </div>
+                    <div class="form-group">
+                        <label>الوحدة</label>
+                        <input type="text" name="unit" id="editUnit" placeholder="مثال: قطعة، كجم">
+                    </div>
+                    <div class="form-group">
+                        <label>السعر</label>
+                        <input type="number" name="price" id="editPrice" step="0.01" min="0" placeholder="مثال: 10.50">
+                    </div>
+                    <div class="form-group">
+                        <label>الكمية</label>
+                        <input type="number" name="quantity" id="editQuantity" min="0" required>
+                    </div>
+                    <input type="hidden" name="product_id" id="editProductId">
+                    <input type="hidden" name="manufacturer_id" id="editManufacturerId">
+                    <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- نافذة إدارة الأصناف -->
+        <div class="popup" id="manageCategoriesPopup">
+            <div class="popup-content">
+                <button class="close-btn" onclick="closePopup('manageCategoriesPopup')" aria-label="إغلاق">×</button>
+                <h2>إدارة الأصناف</h2>
+                <form id="addCategoryForm">
+                    <div class="form-group">
+                        <label>اسم الصنف</label>
+                        <input type="text" name="category_name" required>
+                    </div>
+                    <input type="hidden" name="manufacturer_id" id="manageManufacturerId">
+                    <button type="submit" class="btn btn-primary">إضافة صنف</button>
+                </form>
+                <div class="category-list" id="categoryList"></div>
+            </div>
+        </div>
+
+        <!-- نافذة إضافة إلى العربة -->
+        <div class="popup" id="addToCartPopup">
+            <div class="popup-content">
+                <button class="close-btn" onclick="closePopup('addToCartPopup')" aria-label="إغلاق">×</button>
+                <h2>إضافة إلى العربة</h2>
+                <div id="cartProductDetails"></div>
+                <form id="addToCartForm">
+                    <div class="form-group">
+                        <label>الكمية</label>
+                        <input type="number" name="quantity" min="1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ملاحظات (اختياري)</label>
+                        <textarea name="notes" rows="4" placeholder="أدخل أي تعليمات خاصة"></textarea>
+                    </div>
+                    <input type="hidden" name="product_id" id="cartProductId">
+                    <button type="submit" class="btn btn-primary">إضافة إلى العربة</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- رسالة الإشعار -->
+        <div class="message-header" id="messageBox" style="display: none;">
+            <span id="messageText"></span>
+            <button class="close-message-btn" onclick="hideMessage()" aria-label="إغلاق الرسالة">×</button>
+        </div>
+    </div>
+
+    <script src="/sidebar.js"></script>
+    <script src="/js/products.js"></script>
+</body>
+</html>

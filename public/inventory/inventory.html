@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المخزون</title>
+    <link rel="stylesheet" href="/css/inventory.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="page-background padding-6 font-sans" dir="rtl">
+    <div class="container">
+        <button class="toggle-btn" id="toggle-btn">☰</button>
+        <div id="sidebar" class="sidebar">
+            <h2>لوحة التنقل</h2>
+            <ul id="nav-links"></ul>
+        </div>
+        <div class="content">
+            <div class="header">
+                <h1>إدارة المخزون</h1>
+            </div>
+            <div class="tabs">
+                <button class="tab-button active" onclick="openTab('inventory')">المخزون</button>
+                <button class="tab-button" onclick="openTab('damaged')">المتلفات</button>
+                <button class="tab-button" onclick="openTab('store')">المتجر</button>
+            </div>
+            <!-- Inventory Tab -->
+            <div id="inventory" class="tab-content active">
+                <div class="color-guide">
+                    <div class="guide-item">
+                        <span>مخزون منخفض</span>
+                        <span class="color-box low-stock-color"></span>
+                    </div>
+                    <div class="guide-item">
+                        <span>نفد المخزون</span>
+                        <span class="color-box out-of-stock-color"></span>
+                    </div>
+                    <div class="guide-item">
+                        <span>قريب من الانتهاء</span>
+                        <span class="color-box near-expiry-color"></span>
+                    </div>
+                    <div class="guide-item">
+                        <span>منتهي الصلاحية</span>
+                        <span class="color-box expired-color"></span>
+                    </div>
+                </div>
+                <div class="team-header" id="teamHeader">مجموعة: <span id="teamName">غير محدد</span></div>
+                <div class="section-background padding-6 rounded shadow" id="aisleContainer">
+                    <h2 class="subtitle margin-bottom-4">إدارة الممرات</h2>
+                    <div id="aisleList" class="list-space-y-4"></div>
+                </div>
+            </div>
+            <!-- Damaged Items Tab -->
+            <div id="damaged" class="tab-content">
+                <div class="section-background padding-6 rounded shadow" id="damagedItemsContainer">
+                    <h2 class="subtitle margin-bottom-4">المنتجات المتلفة</h2>
+                    <div class="table-container">
+                        <table class="data-table" id="damagedItemsTable">
+                            <thead>
+                                <tr>
+                                    <th>اسم المنتج</th>
+                                    <th>القسم</th>
+                                    <th>الكمية</th>
+                                    <th>نوع التلف</th>
+                                    <th>السبب</th>
+                                    <th>تاريخ التلف</th>
+                                </tr>
+                            </thead>
+                            <tbody id="damagedItemsList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Store Tab -->
+            <div id="store" class="tab-content">
+                <div class="section-background padding-6 rounded shadow" id="storeTransfersContainer">
+                    <h2 class="subtitle margin-bottom-4">سجلات النقل إلى المتجر</h2>
+                    <div class="table-container">
+                        <table class="data-table" id="storeTransfersTable">
+                            <thead>
+                                <tr>
+                                    <th>اسم المنتج</th>
+                                    <th>القسم</th>
+                                    <th>الكمية</th>
+                                    <th>نوع النقل</th>
+                                    <th>ملاحظات</th>
+                                    <th>تاريخ النقل</th>
+                                </tr>
+                            </thead>
+                            <tbody id="storeTransfersList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Message Box -->
+            <div id="messageBox" class="message-header">
+                <span id="messageText"></span>
+            </div>
+        </div>
+    </div>
+    <script defer src="/sidebar.js"></script>
+    <script defer src="/js/inventory.js"></script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    direction: rtl;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* الحاوية الرئيسية */
+.container {
+    display: flex;
+    transition: margin-right 0.3s ease;
+}
+
+/* الشريط الجانبي */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #4b5fbb;
+    color: white;
+    padding-top: 20px;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    right: -250px;
+    top: 0;
+    transition: right 0.3s ease;
+}
+
+/* عند فتح الشريط الجانبي */
+.container.open .sidebar {
+    right: 0;
+}
+
+/* تنسيق الشعار في الأعلى */
+.sidebar-logo {
+    text-align: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 20px;
+}
+
+.sidebar-logo i {
+    font-size: 30px;
+    color: #f1c40f; /* لون أصفر للأيقونة */
+}
+
+.sidebar-logo h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+/* المحتوى الرئيسي */
+.content {
+    flex: 1;
+    padding: 20px;
+    transition: margin-right 0.3s ease;
+}
+
+.container.open .content {
+    margin-right: 250px;
+}
+
+/* زر التبديل */
+.toggle-btn {
+    position: fixed;
+    top: 5px;
+    right: 10px;
+    background: #4b5fbb;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 999;
+    font-size: 10px;
+}
+
+/* تنسيق الروابط داخل الشريط الجانبي */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px 20px;
+}
+
+.sidebar ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    display: flex; /* استخدام Flexbox للأيقونة والنص */
+    align-items: center;
+    font-family: 'Tajawal', Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background 0.3s, color 0.3s;
+}
+
+.sidebar ul li a i {
+    margin-left: 10px; /* مسافة بين الأيقونة والنص (من الجهة اليسرى لأنه RTL) */
+    font-size: 18px;
+}
+
+.sidebar ul li a span {
+    flex-grow: 1; /* النص يأخذ المساحة المتبقية */
+}
+
+.sidebar ul li a:hover {
+    background: #34495e;
+    color: #f1c40f;
+}

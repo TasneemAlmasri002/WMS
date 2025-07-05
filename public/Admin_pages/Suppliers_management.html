@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الموردين</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <button class="toggle-btn" id="toggle-btn">☰</button>
+        <div id="sidebar" class="sidebar">
+            <h2>لوحة التنقل</h2>
+            <ul id="nav-links"></ul>
+        </div>
+        <div id="content" class="content">
+            <div id="messageHeader" class="message-header" style="display: none;">
+                <p id="messageText"></p>
+                <span class="close-message-btn" onclick="hideMessage()">×</span>
+            </div>
+            <div class="header">
+                <h1>إدارة الموردين</h1>
+            </div>
+            <div class="toolbar">
+                <button class="btn btn-secondary export-btn" onclick="exportToCSV()">تصدير إلى CSV</button>
+                <div class="activity-filter">
+                    <select id="activityFilter" class="activity-select">
+                        <option value="">جميع الحالات</option>
+                        <option value="Active">نشط</option>
+                        <option value="Inactive">غير نشط</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="ابحث عن مورد...">
+                <button class="btn btn-secondary" id="searchBtn" onclick="searchSuppliers()">بحث</button>
+                <button class="btn btn-secondary" id="resetBtn" onclick="resetSearch()">إعادة تعيين</button>
+                <span id="searchResultsCount"></span>
+            </div>
+            <div class="table-container">
+                <table id="dataTable" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>معرف المورد</th>
+                            <th>اسم المورد</th>
+                            <th>الشركة </th> 
+                            <th>البريد الإلكتروني</th>
+                            <th>رقم الهاتف</th>
+                            <th>العنوان</th>
+                            <th>الحالة</th>
+                            <th>عدد الطلبات</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <!-- نافذة تفاصيل الطلبات -->
+            <div id="ordersPopup" class="popup" style="display: none;">
+                <div class="popup-content">
+                    <span class="close-btn" onclick="closeOrdersPopup()">×</span>
+                    <h2>تفاصيل الطلبات</h2>
+                    <table id="ordersTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>معرف الطلب</th>
+                                <th>تاريخ الطلب</th>
+                                <th>المبلغ</th>
+                                <th>حالة الدفع</th>
+                                <th>شروط الدفع</th>
+                                <th>حالة التسليم</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/sidebar.js"></script>
+    <script src="/js/suppliers.js"></script>
+</body>
+</html>

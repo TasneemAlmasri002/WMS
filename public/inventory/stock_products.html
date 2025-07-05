@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منتجات المخزون</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4b5fbb;
+            --secondary-color: #555555;
+            --accent-color: #4b5fbb;
+            --error-color: #ff0000;
+            --success-color: #4CAF50;
+            --background-color: #f4f4f4;
+            --white: #ffffff;
+            --text-color: #333333;
+            --shadow: 0 4px 6px rgba(59, 31, 31, 0.1);
+            --transition: all 0.3s ease;
+            --low-stock-color: #ffff00; /* Yellow */
+            --out-of-stock-color: #0000ff; /* Blue */
+            --near-expiry-color: #ffcccc; /* Pink */
+            --expired-color: #ff0000; /* Red */
+        }
+        .page-background {
+            background-color: #f3f4f6;
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            direction: rtl;
+        }
+        .content {
+            margin: 0 auto;
+        }
+        .header h1 {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 15px 20px;
+            margin: 0 0 20px 0;
+            text-align: center;
+            font-size: 24px;
+            border-radius: 8px 8px 0 0;
+            box-shadow: var(--shadow);
+        }
+        .section-info {
+            background-color: #e5e7eb;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            text-align: right;
+        }
+        .subtitle {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: right;
+        }
+        .section-background {
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+        .flex {
+            display: flex;
+            gap: 8px;
+            flex-direction: row-reverse;
+        }
+        .margin-bottom-4 {
+            margin-bottom: 16px;
+        }
+        .margin-bottom-6 {
+            margin-bottom: 24px;
+        }
+        .input-border {
+            border: 1px solid #d1d5db;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .width-full {
+            width: 100%;
+        }
+        .padding-2 {
+            padding: 8px;
+        }
+        .padding-4-2 {
+            padding: 10px 20px;
+        }
+        .rounded {
+            border-radius: 4px;
+        }
+        .button-blue {
+            background-color: #3b82f6;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .hover-button-blue:hover {
+            background-color: #2563eb;
+        }
+        .list-space-y-4 {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .list-space-y-4 > li {
+            margin-bottom: 16px;
+        }
+        .aisle-item {
+            background-color: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .shelf-item {
+            background-color: #e5e7eb;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--white);
+        }
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #d1d5db;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+        }
+        table tr.low-stock {
+            background-color: var(--low-stock-color) !important; /* #ffff00 */
+            color: #000000 !important;
+        }
+        table tr.out-of-stock {
+            background-color: var(--out-of-stock-color) !important; /* #0000ff */
+            color: #ffffff !important;
+        }
+        table tr.near-expiry {
+            background-color: var(--near-expiry-color) !important; /* #ffcccc */
+            color: #000000 !important;
+        }
+        table tr.expired {
+            background-color: var(--expired-color) !important; /* #ff0000 */
+            color: #ffffff !important;
+        }
+        table td.near-expiry-alert {
+            background-color: #ffe6e6 !important;
+            color: #000000 !important;
+        }
+        tr:hover {
+            background-color: #f1f5f9 !important;
+            transition: var(--transition);
+        }
+        tr:hover td.near-expiry-alert {
+            background-color: #ffe6e6 !important;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            text-align: right;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 1rem;
+            text-align: right;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(75, 95, 187, 0.2);
+        }
+        .action-buttons .button-blue {
+            margin-left: 8px;
+        }
+        .button-error {
+            background-color: var(--error-color);
+            color: var(--white);
+        }
+        .button-error:hover {
+            background-color: #d32f2f;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: var(--white);
+            padding: 24px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: var(--shadow);
+            position: relative;
+            direction: rtl;
+        }
+        @media (max-width: 600px) {
+            .modal-content {
+                width: 95%;
+                padding: 16px;
+            }
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+        }
+        .action-buttons .damage-btn {
+            background-color: #d9534f;
+            color: var(--white);
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        .action-buttons .damage-btn:hover {
+            background-color: #c9302c;
+        }
+        .legend {
+            margin-bottom: 16px;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+        .legend span {
+            margin-left: 16px;
+        }
+        .legend span span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 0 4px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="page-background">
+    <div class="content">
+        <div class="header">
+            <h1>إدارة منتجات المخزون</h1>
+        </div>
+        <div id="sectionInfo" class="section-info" style="display: none;">
+            معرف القسم: <span id="sectionId"></span> | اسم القسم: <span id="sectionName"></span>
+        </div>
+        <div class="section-background">
+            <button class="button-blue hover-button-blue padding-4-2" onclick="openModal()" aria-label="إضافة منتج جديد إلى المخزون">إضافة منتج جديد</button>
+            <button class="button-blue hover-button-blue padding-4-2" onclick="window.location.href='/inventory/inventory.html'" aria-label="رجوع إلى صفحة المخزون">رجوع إلى المخزون</button>
+        </div>
+        <div id="addProductModal" class="modal" role="dialog" aria-labelledby="addProductModalTitle">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeModal()" aria-label="إغلاق النافذة">×</span>
+                <h2 id="addProductModalTitle">إضافة منتج جديد</h2>
+                <form id="addProductForm" class="margin-bottom-4">
+                    <div class="form-group margin-bottom-4">
+                        <label for="order_id">معرف الطلب</label>
+                        <select id="order_id" class="input-border rounded" required onchange="fetchProductsForOrder()">
+                            <option value="">اختر معرف الطلب</option>
+                        </select>
+                    </div>
+                    <div class="form-group margin-bottom-4">
+                        <label for="product_id">اسم المنتج</label>
+                        <select id="product_id" class="input-border rounded" required>
+                            <option value="">اختر اسم المنتج</option>
+                        </select>
+                    </div>
+                    <div class="flex margin-bottom-4">
+                        <div class="form-group width-full">
+                            <label for="quantity">الكمية المتوفرة داخل المخزون</label>
+                            <input type="number" id="quantity" class="input-border rounded" placeholder="أدخل الكمية المرادة" min="0" value="0" required>
+                            <span id="quantity-error" class="error-message">الكمية يجب ألا تتجاوز الكمية المتبقية</span>
+                        </div>
+                        <div class="form-group width-full">
+                            <label for="manufacturing_date">تاريخ التصنيع</label>
+                            <input type="date" id="manufacturing_date" class="input-border rounded">
+                        </div>
+                    </div>
+                    <div class="flex margin-bottom-4">
+                        <div class="form-group width-full">
+                            <label for="expiration_date">تاريخ انتهاء الصلاحية</label>
+                            <input type="date" id="expiration_date" class="input-border rounded">
+                        </div>
+                        <div class="form-group width-full">
+                            <label for="alert_entry_date">تاريخ التنبيه للانتهاء</label>
+                            <input type="date" id="alert_entry_date" class="input-border rounded">
+                        </div>
+                    </div>
+                    <div class="form-group margin-bottom-4">
+                        <label for="stock_entry_date">تاريخ الدخول إلى المخزون</label>
+                        <input type="date" id="stock_entry_date" class="input-border rounded">
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="submit" class="button-blue hover-button-blue padding-4-2" aria-label="إضافة المنتج إلى المخزون">إضافة المنتج</button>
+                        <button type="button" class="button-error padding-4-2" onclick="closeModal()" aria-label="إلغاء إضافة المنتج">إلغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="reportDamageModal" class="modal" role="dialog" aria-labelledby="reportDamageModalTitle">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeReportDamageModal()" aria-label="إغلاق النافذة">×</span>
+                <h2 id="reportDamageModalTitle">تسجيل إتلاف</h2>
+                <form id="reportDamageForm" class="margin-bottom-4">
+                    <input type="hidden" id="damageStockProductId">
+                    <input type="hidden" id="damageProductId">
+                    <input type="hidden" id="damageSectionId">
+                    <input type="hidden" id="damageMaxQuantity">
+                    <div class="form-group margin-bottom-4">
+                        <label for="damageQuantity">الكمية المراد إتلافها</label>
+                        <input type="number" id="damageQuantity" class="input-border rounded" min="1" required>
+                        <span id="damageQuantityError" class="error-message">الكمية يجب أن تكون أقل من أو تساوي الكمية المتوفرة</span>
+                    </div>
+                    <div class="form-group margin-bottom-4">
+                        <label for="damageType">نوع التلف</label>
+                        <select id="damageType" class="input-border rounded" required>
+                            <option value="">اختر نوع التلف</option>
+                            <option value="منتهي الصلاحية">منتهي الصلاحية</option>
+                            <option value="تالف أثناء النقل">تالف أثناء النقل</option>
+                            <option value="عيب تصنيع">عيب تصنيع</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <div class="form-group margin-bottom-4">
+                        <label for="damageReason">سبب التلف</label>
+                        <textarea id="damageReason" class="input-border rounded" placeholder="اكتب سبب التلف (اختياري)" rows="3" aria-required="false"></textarea>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="submit" class="button-blue hover-button-blue padding-4-2" aria-label="تسجيل الإتلاف">تسجيل الإتلاف</button>
+                        <button type="button" class="button-error padding-4-2" onclick="closeReportDamageModal()" aria-label="إلغاء تسجيل الإتلاف">إلغاء</button>
+                    </div>
+                    <span id="damageError" class="error-message"></span>
+                </form>
+            </div>
+        </div>
+        <div id="transferToStoreModal" class="modal" role="dialog" aria-labelledby="transferToStoreModalTitle">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeTransferToStoreModal()" aria-label="إغلاق النافذة">×</span>
+                <h2 id="transferToStoreModalTitle">نقل إلى المتجر</h2>
+                <form id="transferToStoreForm">
+                    <input type="hidden" id="transferStockProductId">
+                    <input type="hidden" id="transferProductId">
+                    <input type="hidden" id="transferFromSectionId">
+                    <input type="hidden" id="transferMaxQuantity">
+                    <div class="form-group">
+                        <label for="transferQuantity">الكمية:</label>
+                        <input type="number" id="transferQuantity" class="input-border rounded" min="1" required>
+                        <div id="transferQuantityError" class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="transferDate">تاريخ النقل:</label>
+                        <input type="date" id="transferDate" class="input-border rounded" required>
+                        <div id="transferDateError" class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="transferNotes">ملاحظات (اختياري):</label>
+                        <textarea id="transferNotes" class="input-border rounded" aria-required="false"></textarea>
+                    </div>
+                    <div id="transferError" class="error-message"></div>
+                    <div class="modal-buttons">
+                        <button type="submit" class="button-blue hover-button-blue padding-4-2" aria-label="نقل المنتج إلى المتجر">نقل</button>
+                        <button type="button" class="button-error padding-4-2" onclick="closeTransferToStoreModal()" aria-label="إلغاء النقل">إلغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="subtitle">المنتجات في المخزون</div>
+        <div class="legend">
+            <span>
+                <span style="background-color: var(--expired-color);"></span> منتهي الصلاحية
+            </span>
+            <span>
+                <span style="background-color: var(--out-of-stock-color);"></span> نفاد المخزون
+            </span>
+            <span>
+                <span style="background-color: var(--near-expiry-color);"></span> قريب من انتهاء الصلاحية
+            </span>
+            <span>
+                <span style="background-color: var(--low-stock-color);"></span> انخفاض المخزون
+            </span>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>معرف منتج المخزون</th>
+                        <th>معرف المخزون</th>
+                        <th>معرف الطلب</th>
+                        <th>اسم المنتج</th>
+                        <th>الكمية</th>
+                        <th>التواريخ</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="stock-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="/js/stock_products.js"></script>
+</body>
+</html>

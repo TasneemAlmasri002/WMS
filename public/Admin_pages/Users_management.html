@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المستخدمين</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body> 
+    <div class="container">
+        <button class="toggle-btn" id="toggle-btn">☰</button>
+        <div id="content" class="content">
+            <div id="messageHeader" class="message-header" style="display: none;">
+                <p id="messageText"></p>
+                <span class="close-message-btn" onclick="hideMessage()">×</span>
+            </div>
+            <div class="header">
+                <h1>إدارة المستخدمين</h1>
+            </div>
+            <div class="toolbar">
+                <button class="btn btn-primary" onclick="showAddUserPopup()">إضافة مستخدم جديد</button>
+                <button class="btn btn-secondary export-btn" onclick="exportToCSV()">تصدير إلى CSV</button>
+                <div class="role-filter">
+                    <button class="btn btn-secondary role-btn active" data-role="">الكل</button>
+                    <button class="btn btn-secondary role-btn" data-role="مسؤول النظام">مسؤول النظام</button>
+                    <button class="btn btn-secondary role-btn" data-role="مدير">مدير</button>
+                    <button class="btn btn-secondary role-btn" data-role="مورد">مورد</button>
+                    <button class="btn btn-secondary role-btn" data-role="موظف المستودع">موظف المستودع</button>
+                    <button class="btn btn-secondary role-btn" data-role="موظف التتبع و الفواتير">موظف التتبع</button>
+                </div>
+                <div class="activity-filter">
+                    <select id="activityFilter" class="activity-select">
+                        <option value="">جميع الحالات</option>
+                        <option value="Active">نشط</option>
+                        <option value="Inactive">غير نشط</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="ابحث عن مستخدم...">
+                <button class="btn btn-secondary" id="searchBtn" onclick="searchUsers()">بحث</button>
+                <button class="btn btn-secondary" id="resetBtn" onclick="resetSearch()">إعادة تعيين</button>
+                <span id="searchResultsCount"></span>
+            </div>
+            <div class="table-container">
+                <table id="dataTable" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>معرف المستخدم</th>
+                            <th>اسم المستخدم</th>
+                            <th>الدور</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>رقم الهاتف</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="addPopup" class="popup" style="display: none;">
+                <div class="popup-content">
+                    <span class="close-btn" onclick="closeAddUserPopup()">×</span>
+                    <h2>إضافة مستخدم جديد</h2>
+                    <form id="addForm" class="form">
+                        <div class="form-group">
+                            <label for="userName">اسم المستخدم</label>
+                            <input type="text" id="userName" required>
+                            <span class="error-message" id="userNameError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">البريد الإلكتروني</label>
+                            <input type="email" id="userEmail" required>
+                            <span class="error-message" id="userEmailError"></span>
+                        </div>
+                        <div class="form-group phone-container">
+                            <label for="userPhone">رقم الهاتف</label>
+                            <input type="text" id="userPhone" maxlength="9" required>
+                            <select id="countryCode">
+                                <option value="+962">+962</option>
+                            </select>
+                            <span class="error-message" id="userPhoneError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="userPassword">كلمة المرور</label>
+                            <input type="password" id="userPassword" required>
+                            <span class="error-message" id="userPasswordError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="userRole">الدور</label>
+                            <select id="userRole">
+                                <option value="مسؤول النظام">مسؤول النظام</option>
+                                <option value="مدير">مدير</option>
+                                <option value="مورد">مورد</option>
+                                <option value="موظف المستودع">موظف المستودع</option>
+                                <option value="موظف التتبع و الفواتير">موظف التتبع و الفواتير</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="addUser()">إضافة</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeAddUserPopup()">إلغاء</button>
+                        <span class="error-message" id="addFormError"></span>
+                    </form>
+                </div>
+            </div>
+            <div id="editPopup" class="popup" style="display: none;">
+                <div class="popup-content">
+                    <span class="close-btn" onclick="closeEditUserPopup()">×</span>
+                    <h2>تعديل مستخدم</h2>
+                    <form id="editForm" class="form">
+                        <input type="hidden" id="editUserId">
+                        <div class="form-group">
+                            <label for="editUserName">اسم المستخدم</label>
+                            <input type="text" id="editUserName" required>
+                            <span class="error-message" id="editUserNameError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmail">البريد الإلكتروني</label>
+                            <input type="email" id="editEmail" required>
+                            <span class="error-message" id="editEmailError"></span>
+                        </div>
+                        <div class="form-group phone-container">
+                            <label for="editPhoneNumber">رقم الهاتف</label>
+                            <input type="text" id="editPhoneNumber" maxlength="9" required>
+                            <select id="editCountryCode">
+                                <option value="+962">+962</option>
+                            </select>
+                            <span class="error-message" id="editPhoneError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="editRole">الدور</label>
+                            <select id="editRole">
+                                <option value="مسؤول النظام">مسؤول النظام</option>
+                                <option value="مدير">مدير</option>
+                                <option value="مورد">مورد</option>
+                                <option value="موظف المستودع">موظف المستودع</option>
+                                <option value="موظف التتبع و الفواتير">موظف التتبع و الفواتير</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editStatus">الحالة</label>
+                            <select id="editStatus">
+                                <option value="Active">نشط</option>
+                                <option value="Inactive">غير نشط</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="updateUser(document.getElementById('editUserId').value)">حفظ</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetPassword(document.getElementById('editUserId').value)">إعادة تعيين كلمة المرور</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeEditUserPopup()">إلغاء</button>
+                        <span class="error-message" id="editFormError"></span>
+                    </form>
+                </div>
+            </div>
+            <div id="resetPasswordPopup" class="popup" style="display: none;">
+                <div class="popup-content">
+                    <span class="close-btn" onclick="closeResetPasswordPopup()">×</span>
+                    <h2>إعادة تعيين كلمة المرور</h2>
+                    <form id="resetPasswordForm" class="form">
+                        <input type="hidden" id="resetUserId">
+                        <div class="form-group">
+                            <label for="newPassword">كلمة المرور الجديدة</label>
+                            <input type="password" id="newPassword" required>
+                            <span class="error-message" id="newPasswordError"></span>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitResetPassword()">حفظ</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeResetPasswordPopup()">إلغاء</button>
+                        <span class="error-message" id="resetFormError"></span>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="sidebar" class="sidebar">
+            <h2>لوحة التنقل</h2>
+            <ul id="nav-links"></ul>
+        </div>
+    </div>
+    <script src="/sidebar.js"></script>
+    <script src="/users.js"></script>
+</body>
+</html>

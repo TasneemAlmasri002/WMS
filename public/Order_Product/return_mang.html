@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة المرتجعات</title>
+  <!-- استدعاء ملفات CSS -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/sidebar.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* تنسيقات إضافية للنافذة المنبثقة والأزرار */
+    .filter-buttons {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-buttons button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .filter-buttons button.active,
+    .filter-buttons button:hover {
+      background-color: #007bff;
+      color: white;
+    }
+    .search-container {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .search-container input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 200px;
+    }
+    .search-container button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .search-container button:hover {
+      background-color: #0056b3;
+    }
+    #searchResultsCount {
+      font-size: 14px;
+      color: #555;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    .modal-header h3 {
+      margin: 0;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #ff0000;
+      transition: color 0.3s;
+    }
+    .close-btn:hover {
+      color: #cc0000;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .items-table th,
+    .items-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: right;
+    }
+    .items-table th {
+      background-color: #f4f4f4;
+    }
+    .no-items {
+      text-align: center;
+      color: #888;
+      padding: 20px;
+    }
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 2px;
+    }
+    .approve-btn {
+      background-color: #28a745;
+      color: white;
+    }
+    .approve-btn:hover {
+      background-color: #218838;
+    }
+    .reject-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    .reject-btn:hover {
+      background-color: #c82333;
+    }
+    .process-btn {
+      background-color: #007bff;
+      color: white;
+    }
+    .process-btn:hover {
+      background-color: #0056b3;
+    }
+    .reason-btn {
+      background-color: #6c757d;
+      color: white;
+    }
+    .reason-btn:hover {
+      background-color: #5a6268;
+    }
+    .status-pending { color: orange; }
+    .status-approved { color: green; }
+    .status-rejected { color: red; }
+    .status-processed { color: blue; }
+    .modal-body p {
+      font-size: 14px;
+      color: #333;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="toggle-btn" id="toggle-btn">☰</button>
+    <div id="sidebar" class="sidebar">
+      <h2>لوحة التنقل</h2>
+      <ul id="nav-links"></ul>
+    </div>
+    <div class="content">
+      <div class="header">
+        <h1>إدارة المرتجعات</h1>
+      </div>
+      <!-- حقل البحث وأزرار الإجراءات -->
+      <div class="search-container">
+        <input id="searchInput" type="text" placeholder="ابحث برقم المرتجع أو الطلب...">
+        <button id="searchBtn">بحث</button>
+        <button id="resetSearchBtn">إعادة تعيين</button>
+        <span id="searchResultsCount"></span>
+      </div>
+      <!-- أزرار التصفية -->
+      <div class="filter-buttons">
+        <button class="status-btn" data-status="">الكل</button>
+        <button class="status-btn" data-status="قيد الانتظار">قيد الانتظار</button>
+        <button class="status-btn" data-status="موافق عليه">موافق عليه</button>
+        <button class="status-btn" data-status="مرفوض">مرفوض</button>
+        <button class="status-btn" data-status="تمت المعالجة">تمت المعالجة</button>
+        <button class="category-btn" data-category="">جميع الفئات</button>
+        <button class="category-btn" data-category="تالف">تالف</button>
+        <button class="category-btn" data-category="غير مطابق">غير مطابق</button>
+        <button class="category-btn" data-category="أخرى">أخرى</button>
+      </div>
+      <!-- جدول المرتجعات -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>رقم المرتجع</th>
+              <th>رقم الطلب</th>
+              <th>الحالة</th>
+              <th>تاريخ الإرجاع</th>
+              <th>فئة الإرجاع</th>
+              <th>المرفقات</th>
+              <th>عرض العناصر</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="returnsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- استدعاء ملفات JavaScript -->
+  <script src="/sidebar.js"></script>
+  <script src="/js/returns_mang.js"></script>
+</body>
+</html>

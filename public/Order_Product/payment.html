@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إتمام الدفع</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .payment-option {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .payment-option.selected {
+            border-color: #007bff;
+            background: #e7f1ff;
+        }
+        .payment-option input {
+            margin-left: 10px;
+        }
+        #credit-card-form {
+            display: none;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+            display: none;
+            margin-top: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn-complete {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-complete:hover {
+            background: #218838;
+        }
+        .btn-complete:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+        .btn-print {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn-print:hover {
+            background: #0056b3;
+        }
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .back-btn:hover {
+            background: #5a6268;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-invoice-section, #print-invoice-section * {
+                visibility: visible;
+            }
+            #print-invoice-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+                direction: rtl;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- زر التبديل -->
+        <button class="toggle-btn" id="toggle-btn">☰</button>
+
+        <div id="sidebar" class="sidebar">
+            <h2>لوحة التنقل</h2>
+            <ul id="nav-links"></ul>
+        </div>
+
+        <div class="content">
+            <div class="header">
+                <h1>إتمام الدفع</h1>
+            </div>
+
+            <div id="alerts-container"></div>
+
+            <h3>اختر طريقة الدفع</h3>
+            <div class="payment-option">
+                <input type="radio" name="payment-method" value="عند الاستلام" id="cod">
+                <label for="cod">عند الاستلام</label>
+            </div>
+            <div class="payment-option">
+                <input type="radio" name="payment-method" value="تحويل بنكي" id="bank">
+                <label for="bank">تحويل بنكي</label>
+            </div>
+            <div class="payment-option">
+                <input type="radio" name="payment-method" value="بطاقة ائتمان" id="card">
+                <label for="card">بطاقة ائتمان</label>
+            </div>
+
+            <div id="credit-card-form">
+                <h4>تفاصيل البطاقة</h4>
+                <label for="card-number">رقم البطاقة</label>
+                <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                <div id="card-error" class="error">رقم البطاقة غير صالح</div>
+
+                <label for="expiry-date">تاريخ الانتهاء</label>
+                <input type="text" id="expiry-date" placeholder="MM/YY">
+                <div id="expiry-error" class="error">تاريخ الانتهاء غير صالح</div>
+
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" placeholder="123" maxlength="3">
+                <div id="cvv-error" class="error">CVV غير صالح</div>
+            </div>
+
+            <div class="actions" id="payment-actions">
+                <button class="btn btn-cancel" id="cancel-btn">إلغاء</button>
+                <button class="btn btn-complete" id="complete-payment-btn">إتمام الدفع</button>
+            </div>
+
+            <div class="actions" id="post-payment-actions" style="display: none;">
+                <button class="btn btn-print" id="print-invoice-btn">طباعة الفاتورة</button>
+                <a href="/Order_Product/payment-mang.html" class="back-btn"><i class="fas fa-arrow-right"></i> العودة إلى إدارة المدفوعات</a>
+            </div>
+
+            <!-- قسم الطباعة (مخفي) -->
+            <div id="print-invoice-section" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="/sidebar.js"></script>
+    <script src="/js/payment-complete.js"></script>
+</body>
+</html>
